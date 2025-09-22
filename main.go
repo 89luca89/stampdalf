@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"os/exec"
@@ -41,7 +42,9 @@ func registerDir(dir string) (map[string]FileTimestamps, error) {
 
 func executeCommand(command []string, workDir string) error {
 	cmd := exec.Command(command[0], command[1:]...)
-	cmd.Dir = workDir
+	if workDir != "" {
+		cmd.Dir = workDir
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -82,15 +85,21 @@ func resetTimestamps(dir string, defaultStamp time.Time, timestamps map[string]F
 }
 
 func main() {
-	if len(os.Args) < 2 {
+	changeDir := flag.Bool("cd", false, "change to <directory> before executing command")
+	flag.Parse()
+	if len(flag.Args()) < 2 {
 		log.Fatalf("Usage: %s <directory> <command> [args ...]\n", os.Args[0])
 	}
 
-	dir := os.Args[1]
-	command := os.Args[2:]
+	dir := flag.Args()[0]
+	command := flag.Args()[1:]
+	workDir := ""
+	if *changeDir {
+		workDir = dir
+	}
 
 	if info, err := os.Stat(dir); err != nil || !info.IsDir() {
-		log.Fatalf("Error: %s is not a valid directory\n", dir)
+		log.Fatalf("Error: %s is not a valid directory: %v\n", dir, err)
 	}
 
 	// Step 1: Scan original timestamps
@@ -103,7 +112,7 @@ func main() {
 
 	// Step 2: Execute command
 	log.Printf("Executing command: %s\n", shellquote.Join(command...))
-	if err := executeCommand(command, dir); err != nil {
+	if err := executeCommand(command, workDir); err != nil {
 		log.Fatalf("Command failed: %v\n", err)
 	}
 

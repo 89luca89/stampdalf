@@ -39,16 +39,16 @@ stampdalf <directory> [command...]
 
 ```bash
 # Format all Go files without changing timestamps
-stampdalf ./src gofmt -w .
+stampdalf --cd ./src gofmt -w .
 
 # Build a project with reproducible timestamps
-stampdalf ./project make build
+stampdalf --cd ./project make build
 
 # Process images without affecting modification times
-stampdalf ./images mogrify -resize 50% *.jpg
+stampdalf ./images mogrify -resize 50% images/*.jpg
 
 # Set new files to specific timestamp (for reproducible builds)
-SOURCE_DATE_EPOCH=1609459200 stampdalf ./dist npm run build
+SOURCE_DATE_EPOCH=1609459200 stampdalf --cd ./dist npm run build
 ```
 
 ## How it works
