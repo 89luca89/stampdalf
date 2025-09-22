@@ -39,8 +39,8 @@ func registerDir(dir string) (map[string]FileTimestamps, error) {
 	return timestamps, err
 }
 
-func executeCommand(command string, workDir string) error {
-	cmd := exec.Command("sh", "-c", command)
+func executeCommand(command []string, workDir string) error {
+	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Dir = workDir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -83,11 +83,11 @@ func resetTimestamps(dir string, defaultStamp time.Time, timestamps map[string]F
 
 func main() {
 	if len(os.Args) < 2 {
-		log.Fatalf("Usage: %s <directory> <command>\n", os.Args[0])
+		log.Fatalf("Usage: %s <directory> <command> [args ...]\n", os.Args[0])
 	}
 
 	dir := os.Args[1]
-	command := shellquote.Join(os.Args[2:]...)
+	command := os.Args[2:]
 
 	if info, err := os.Stat(dir); err != nil || !info.IsDir() {
 		log.Fatalf("Error: %s is not a valid directory\n", dir)
@@ -102,7 +102,7 @@ func main() {
 	log.Printf("Found %d files/directories\n", len(originalTimestamps))
 
 	// Step 2: Execute command
-	log.Printf("Executing command: %s\n", command)
+	log.Printf("Executing command: %s\n", shellquote.Join(command...))
 	if err := executeCommand(command, dir); err != nil {
 		log.Fatalf("Command failed: %v\n", err)
 	}
