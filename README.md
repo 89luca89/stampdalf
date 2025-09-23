@@ -5,6 +5,10 @@
 A filesystem timestamp preservation tool that executes commands while keeping
 original file access and modification times intact.
 
+🧙 it's a wizard of time and stamps 🧙
+
+Pronounced: stamp-dalf (stamp like time-stamp, dalf like Gandalf the wizard)
+
 ## What it does
 
 `stampdalf` allows you to run any command that modifies files in a directory
