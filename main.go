@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/kballard/go-shellquote"
 	"golang.org/x/sys/unix"
 )
 
@@ -112,7 +111,7 @@ func main() {
 	log.Printf("Found %d files/directories\n", len(originalTimestamps))
 
 	// Step 2: Execute command
-	log.Printf("Executing command: %s\n", shellquote.Join(command...))
+	log.Printf("Executing command: %s\n", command)
 	if err := executeCommand(command, workDir); err != nil {
 		log.Fatalf("Command failed: %v\n", err)
 	}
