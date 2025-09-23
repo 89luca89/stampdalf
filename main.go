@@ -68,12 +68,13 @@ func resetTimestamps(dir string, defaultStamp time.Time, timestamps map[string]F
 			// new file. let's set to 0 or SOURCE_DATE_EPOCH
 			originalTs.Atime = defaultStamp
 			originalTs.Mtime = defaultStamp
+			log.Println("found new file:", path)
 		} else {
 			if curAtime.Equal(originalTs.Atime) && curMtime.Equal(originalTs.Mtime) {
 				return nil
 			}
+			log.Println("fixing timestamp for:", path)
 		}
-		log.Println("fixing timestamp for:", path)
 		atimeSpec := unix.Timespec{Sec: originalTs.Atime.Unix(), Nsec: int64(originalTs.Atime.Nanosecond())}
 		mtimeSpec := unix.Timespec{Sec: originalTs.Mtime.Unix(), Nsec: int64(originalTs.Mtime.Nanosecond())}
 
